@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:go_router/go_router.dart'; // Already imported
 
 class RecommendedFriendsScreen extends ConsumerStatefulWidget {
   const RecommendedFriendsScreen({super.key});
@@ -210,13 +211,21 @@ class _RecommendedFriendsScreenState
         });
       }
 
+      // FIXED: Use GoRouter navigation instead of Navigator
       // Navigate to home screen
-      Navigator.pushReplacementNamed(context, '/home');
+      if (mounted) {
+        // Use go() to replace entire stack (like pushReplacementNamed)
+        context.go('/home');
+
+        // OR if you want to use the router directly:
+        // GoRouter.of(context).go('/home');
+      }
     } catch (e) {
-      ScaffoldMessenger.of(
-        // ignore: use_build_context_synchronously
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error adding friends: $e')));
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error adding friends: $e')),
+        );
+      }
     }
   }
 }

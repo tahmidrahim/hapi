@@ -2,6 +2,7 @@
 import 'dart:io'; // Required for Platform checks
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart'; // REQUIRED: Add GoRouter import
 // FIX: Hide 'Config' to avoid conflict with emoji_picker_flutter
 import 'package:google_fonts/google_fonts.dart' hide Config;
 import 'package:cached_network_image/cached_network_image.dart';
@@ -114,7 +115,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     return AppBar(
       leading: IconButton(
         icon: const Icon(Icons.arrow_back),
-        onPressed: () => Navigator.pop(context),
+        // FIXED: Use context.pop() instead of Navigator.pop
+        onPressed: () => context.pop(),
       ),
       title: Row(
         children: [
@@ -376,10 +378,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   }
 
   void _startVideoCall() {
-    Navigator.pushNamed(
-      context,
+    // FIXED: Use context.push with 'extra' for arguments
+    context.push(
       '/video-call',
-      arguments: {
+      extra: {
         'userId': widget.userId,
         'userName': widget.userName,
       },
@@ -387,10 +389,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   }
 
   void _startVoiceCall() {
-    Navigator.pushNamed(
-      context,
+    // FIXED: Use context.push with 'extra' for arguments
+    context.push(
       '/video-call',
-      arguments: {
+      extra: {
         'userId': widget.userId,
         'userName': widget.userName,
         'isVideo': false,
@@ -401,10 +403,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   void _handleMenuAction(String value) {
     switch (value) {
       case 'view_profile':
-        Navigator.pushNamed(
-          context,
+        // FIXED: Use context.push with 'extra'
+        context.push(
           '/profile',
-          arguments: widget.userId,
+          extra: widget.userId,
         );
         break;
       case 'clear_chat':
@@ -424,13 +426,15 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         content: const Text('Are you sure you want to clear all messages?'),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            // FIXED: Use context.pop()
+            onPressed: () => context.pop(),
             child: const Text('Cancel'),
           ),
           TextButton(
             onPressed: () {
               setState(() => _messages.clear());
-              Navigator.pop(context);
+              // FIXED: Use context.pop()
+              context.pop();
             },
             child: const Text('Clear'),
           ),
@@ -447,13 +451,15 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
         content: const Text('Are you sure you want to block this user?'),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            // FIXED: Use context.pop()
+            onPressed: () => context.pop(),
             child: const Text('Cancel'),
           ),
           TextButton(
             onPressed: () {
-              Navigator.pop(context);
-              Navigator.pop(context);
+              // FIXED: Use context.pop() twice to close dialog and screen
+              context.pop(); // close dialog
+              context.pop(); // go back to previous screen
             },
             child: const Text('Block'),
           ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:country_pickers/country.dart';
 import 'package:country_pickers/country_pickers.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:go_router/go_router.dart'; // REQUIRED
 
 class CountryPickerScreen extends StatefulWidget {
   const CountryPickerScreen({super.key});
@@ -18,25 +19,58 @@ class _CountryPickerScreenState extends State<CountryPickerScreen> {
   @override
   void initState() {
     super.initState();
-    // Get all countries using available method
     _filteredCountries = _getAllCountries();
     _searchController.addListener(_filterCountries);
   }
 
-  // Get all countries using the available methods
+  // Get all countries
   List<Country> _getAllCountries() {
+    // You can use CountryPickerUtils.getCountryByIsoCode for specific ones,
+    // or typically the package provides a list of all countries.
+    // Here is your curated list logic:
     final countryCodes = [
-      'IN', 'US', 'GB', 'CA', 'AU', 'DE', 'FR', 'JP', 'CN', 'RU',
-      'BR', 'MX', 'IT', 'ES', 'KR', 'SA', 'AE', 'TR', 'ID', 'VN',
-      'TH', 'MY', 'PH', 'SG', 'PK', 'BD', 'LK', 'NP', 'BT', 'MV',
-      // Add more country codes as needed
+      'IN',
+      'US',
+      'GB',
+      'CA',
+      'AU',
+      'DE',
+      'FR',
+      'JP',
+      'CN',
+      'RU',
+      'BR',
+      'MX',
+      'IT',
+      'ES',
+      'KR',
+      'SA',
+      'AE',
+      'TR',
+      'ID',
+      'VN',
+      'TH',
+      'MY',
+      'PH',
+      'SG',
+      'PK',
+      'BD',
+      'LK',
+      'NP',
+      'BT',
+      'MV',
     ];
 
     return countryCodes
-        .map((code) => CountryPickerUtils.getCountryByIsoCode(code))
-        // ignore: unnecessary_null_comparison
+        .map((code) {
+          try {
+            return CountryPickerUtils.getCountryByIsoCode(code);
+          } catch (e) {
+            return null; // Handle invalid codes safely
+          }
+        })
         .where((country) => country != null)
-        .map((country) => country)
+        .cast<Country>()
         .toList();
   }
 
@@ -60,22 +94,28 @@ class _CountryPickerScreenState extends State<CountryPickerScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Popular countries logic
     final popularCountryCodes = [
-      'IN', // India
-      'PK', // Pakistan
-      'PH', // Philippines
-      'BD', // Bangladesh
-      'TR', // Turkey
-      'VN', // Vietnam
-      'ET', // Ethiopia
-      'ZA', // South Africa
+      'IN',
+      'PK',
+      'PH',
+      'BD',
+      'TR',
+      'VN',
+      'ET',
+      'ZA'
     ];
 
     final popularCountries = popularCountryCodes
-        .map((code) => CountryPickerUtils.getCountryByIsoCode(code))
-        // ignore: unnecessary_null_comparison
+        .map((code) {
+          try {
+            return CountryPickerUtils.getCountryByIsoCode(code);
+          } catch (e) {
+            return null;
+          }
+        })
         .where((country) => country != null)
-        .map((country) => country)
+        .cast<Country>()
         .toList();
 
     return Scaffold(
@@ -109,9 +149,9 @@ class _CountryPickerScreenState extends State<CountryPickerScreen> {
             ),
           ),
 
-          // Popular Countries
+          // Popular Countries Wrap
           Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -138,6 +178,8 @@ class _CountryPickerScreenState extends State<CountryPickerScreen> {
             ),
           ),
 
+          const SizedBox(height: 16),
+
           // All Countries List
           Expanded(
             child: ListView.builder(
@@ -147,6 +189,7 @@ class _CountryPickerScreenState extends State<CountryPickerScreen> {
                 final isSelected = _selectedCountry?.isoCode == country.isoCode;
 
                 return ListTile(
+                  // This relies on the pubspec.yaml asset fix!
                   leading: CountryPickerUtils.getDefaultFlagImage(country),
                   title: Text(
                     country.name,
@@ -169,6 +212,7 @@ class _CountryPickerScreenState extends State<CountryPickerScreen> {
   }
 
   void _selectCountry(Country country) {
-    Navigator.pop(context, country);
+    // FIXED: Use context.pop to return the value to the previous screen
+    context.pop(country);
   }
 }

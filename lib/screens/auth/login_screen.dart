@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart'; // ADD THIS IMPORT
 import '../../widgets/auth/social_login_button.dart';
 import '../../services/firebase/auth_service.dart';
 
@@ -23,27 +24,27 @@ class LoginScreen extends ConsumerWidget {
               Center(
                 child: Column(
                   children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(20),
+                      child: Image.asset(
+                        "assets/images/logo.png",
+                        height: 150,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
                     Text(
-                      'Kapi',
+                      'Hapi',
                       style: GoogleFonts.poppins(
                         fontSize: 48,
                         fontWeight: FontWeight.w700,
                         color: Colors.black,
                       ),
                     ),
-                    Text(
-                      'Hapi',
-                      style: GoogleFonts.poppins(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.grey[700],
-                      ),
-                    ),
                   ],
                 ),
               ),
 
-              const SizedBox(height: 60),
+              const SizedBox(height: 200),
 
               // Divider with Text
               Row(
@@ -79,7 +80,7 @@ class LoginScreen extends ConsumerWidget {
               SocialLoginButton(
                 icon: Icons.g_mobiledata,
                 text: 'Google',
-                color: Colors.white,
+                color: Colors.orange.shade100,
                 textColor: Colors.black,
                 border: Border.all(color: Colors.grey[300]!),
                 onPressed: () => _loginWithGoogle(context, ref),
@@ -129,28 +130,44 @@ class LoginScreen extends ConsumerWidget {
   Future<void> _loginWithFacebook(BuildContext context, WidgetRef ref) async {
     try {
       await AuthService.signInWithFacebook();
-      // Navigate to complete profile
+      // Navigate to complete profile using GoRouter
       // ignore: use_build_context_synchronously
-      Navigator.pushNamed(context, '/complete-profile');
+      if (context.mounted) {
+        // Use go() to replace the entire navigation stack
+        context.go('/complete-profile');
+
+        // OR if you want to keep login screen in stack (back button can go back):
+        // context.push('/complete-profile');
+      }
     } catch (e) {
-      ScaffoldMessenger.of(
-        // ignore: use_build_context_synchronously
-        context,
-      ).showSnackBar(SnackBar(content: Text('Facebook login failed: $e')));
+      // ignore: use_build_context_synchronously
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Facebook login failed: $e')),
+        );
+      }
     }
   }
 
   Future<void> _loginWithGoogle(BuildContext context, WidgetRef ref) async {
     try {
       await AuthService.signInWithGoogle();
-      // Navigate to complete profile
+      // Navigate to complete profile using GoRouter
       // ignore: use_build_context_synchronously
-      Navigator.pushNamed(context, '/complete-profile');
+      if (context.mounted) {
+        // Use go() to replace the entire navigation stack
+        context.go('/complete-profile');
+
+        // OR if you want to keep login screen in stack:
+        // context.push('/complete-profile');
+      }
     } catch (e) {
-      ScaffoldMessenger.of(
-        // ignore: use_build_context_synchronously
-        context,
-      ).showSnackBar(SnackBar(content: Text('Google login failed: $e')));
+      // ignore: use_build_context_synchronously
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Google login failed: $e')),
+        );
+      }
     }
   }
 }

@@ -1,6 +1,7 @@
 // lib/screens/auth/complete_profile_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:country_pickers/country.dart';
 import 'package:country_pickers/country_pickers.dart';
@@ -17,8 +18,8 @@ class CompleteProfileScreen extends ConsumerStatefulWidget {
 
 class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
   String? _selectedGender;
-  Country? _selectedCountry;
-  DateTime? _selectedDateOfBirth; // 1. Added State Variable
+  // Country? _selectedCountry; // Not needed for now
+  DateTime? _selectedDateOfBirth;
   final TextEditingController _nameController = TextEditingController();
   bool _isLoading = false;
 
@@ -116,7 +117,7 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
                   ),
                   const SizedBox(height: 24),
 
-                  // 2. Added Date of Birth Field
+                  // Date of Birth Field
                   Text(
                     'Date of Birth',
                     style: GoogleFonts.poppins(
@@ -164,6 +165,8 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
                   ),
                   const SizedBox(height: 24),
 
+                  // ========== COUNTRY SECTION COMMENTED OUT START ==========
+                  /*
                   // Country Selection
                   GestureDetector(
                     onTap: () => _selectCountry(context),
@@ -199,6 +202,9 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
                       ),
                     ),
                   ),
+                  */
+                  // ========== COUNTRY SECTION COMMENTED OUT END ==========
+
                   const SizedBox(height: 40),
 
                   // Next Button
@@ -229,8 +235,9 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
     );
   }
 
+  // ========== COUNTRY LOGIC COMMENTED OUT START ==========
+  /*
   Future<void> _selectCountry(BuildContext context) async {
-    // Note: Assuming CountryPickerDialog is from a package or your widgets
     final country = await showDialog<Country>(
       context: context,
       builder: (context) => CountryPickerDialog(
@@ -238,28 +245,24 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
         searchCursorColor: Colors.pinkAccent,
         searchInputDecoration: const InputDecoration(hintText: 'Search...'),
         isSearchable: true,
-        title: const Text('Select your phone code'),
+        title: const Text('Select your country'),
         onValuePicked: (Country value) {
-          setState(() => _selectedCountry = value);
+          Navigator.pop(context, value);
         },
-        // If your dialog works with onValuePicked directly instead of returning,
-        // you might not need the return value here.
-        // Adjust based on your specific CountryPickerDialog implementation.
       ),
     );
 
-    // Fallback if dialog returns value
     if (country != null) {
       setState(() => _selectedCountry = country);
     }
   }
+  */
+  // ========== COUNTRY LOGIC COMMENTED OUT END ==========
 
-  // 3. Helper to pick date
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: DateTime.now()
-          .subtract(const Duration(days: 365 * 18)), // Default ~18 years ago
+      initialDate: DateTime.now().subtract(const Duration(days: 365 * 18)),
       firstDate: DateTime(1900),
       lastDate: DateTime.now(),
     );
@@ -270,27 +273,26 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
     }
   }
 
-  // 4. Updated Validation
   bool _canProceed() {
     return _selectedGender != null &&
         _nameController.text.trim().isNotEmpty &&
-        _selectedCountry != null &&
-        _selectedDateOfBirth != null; // Ensure Date is selected
+        // _selectedCountry != null && // DISABLED VALIDATION
+        _selectedDateOfBirth != null;
   }
 
   Future<void> _saveProfile() async {
     setState(() => _isLoading = true);
     try {
-      // 5. Pass dateOfBirth to the service
       await AuthService.completeProfile(
         name: _nameController.text.trim(),
         gender: _selectedGender!,
-        country: _selectedCountry!.isoCode,
+        // Pass a default value since the user can't select one
+        country: 'BD',
         dateOfBirth: _selectedDateOfBirth!,
       );
 
       if (mounted) {
-        Navigator.pushNamed(context, '/recommended-friends');
+        context.go('/recommended-friends');
       }
     } catch (e) {
       if (mounted) {
