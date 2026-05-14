@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hapi/providers/navigation_provider.dart';
+import 'package:hapi/screens/call/edit_room_name_dialog.dart';
+import 'package:hapi/screens/call/voice_room_screen.dart';
 import 'package:hapi/screens/home/profile_screen.dart';
 import 'package:hapi/screens/message/message_screen.dart';
 
@@ -94,6 +97,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF1F5F9),
+      // In your HomeScreen (where you have the scaffold)
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          ref.read(navigationProvider.notifier).goToEditRoomName();
+        },
+        backgroundColor: const Color(0xFF1DE9B6),
+        child: const Icon(Icons.mic, color: Colors.white),
+      ),
       body: _screens[_selectedTab],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedTab,

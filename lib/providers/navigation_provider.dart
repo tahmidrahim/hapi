@@ -16,4 +16,12 @@ class NavigationNotifier extends StateNotifier<String> {
   void goToHome() {
     state = '/home';
   }
+
+  void goToEditRoomName() {
+    state = '/edit-room-name';
+  }
+
+  void goToVoiceRoom({String? roomId, bool isCreating = false}) {
+    state = '/voice-room?roomId=${roomId ?? ''}&isCreating=$isCreating';
+  }
 }
