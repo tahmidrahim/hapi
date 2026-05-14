@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "111740807695",
+    "project_id": "hapi-b44bb",
+    "storage_bucket": "hapi-b44bb.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:111740807695:android:ef0a9f3c91ca310689517a",
+        "android_client_info": {
+          "package_name": "com.example.hapi"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "111740807695-unrltcshracqf5nldas9b1dfspf2cl9v.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.hapi",
+            "certificate_hash": "2f46c83722795b2da739b7d5eec1ac252908eac8"
+          }
+        },
+        {
+          "client_id": "111740807695-b2jph7jk02lpt72qdg72d9il20t32846.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBN_EvpmhwQHaccxdEE6kFpmsaBra7IUMY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "111740807695-b2jph7jk02lpt72qdg72d9il20t32846.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "111740807695-922fmb9vlp4lq2v91rgfpaecs07ftma0.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.hapi"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

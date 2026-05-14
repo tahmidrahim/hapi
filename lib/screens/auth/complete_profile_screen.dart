@@ -147,10 +147,16 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
                     return;
                   }
 
-                  // Save user data to provider
+                  // Update user with name and gender
+                  final currentUser = ref.read(userProvider);
                   ref
                       .read(userProvider.notifier)
-                      .updateUser(_nameController.text, selectedGender);
+                      .updateUser(
+                        name: _nameController.text,
+                        gender: selectedGender,
+                        id: currentUser.id,
+                        email: currentUser.email,
+                      );
 
                   ref.read(navigationProvider.notifier).goToHome();
                 },

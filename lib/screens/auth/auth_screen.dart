@@ -1,9 +1,13 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hapi/providers/navigation_provider.dart';
+import 'package:hapi/providers/user_provider.dart';
+import 'package:hapi/screens/auth/auth_service.dart';
 
 class AuthScreen extends ConsumerWidget {
-  const AuthScreen({super.key});
+  AuthScreen({super.key});
+  final AuthService _authService = AuthService();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -71,7 +75,11 @@ class AuthScreen extends ConsumerWidget {
                 icon: Icons.facebook,
                 iconColor: const Color(0xFF1877F2),
                 label: 'Facebook',
-                onTap: () {},
+                onTap: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Facebook login disabled")),
+                  );
+                },
               ),
 
               const SizedBox(height: 16),
@@ -81,7 +89,31 @@ class AuthScreen extends ConsumerWidget {
                     .g_mobiledata_rounded, // Use an SVG for a better Google icon
                 iconColor: Colors.red,
                 label: 'Google',
-                onTap: () {},
+                onTap: () async {
+                  try {
+                    final userCredential = await _authService
+                        .signInWithGoogle();
+
+                    if (userCredential != null && userCredential.user != null) {
+                      final firebaseUser = userCredential.user!;
+
+                      // Save user data to provider
+                      ref
+                          .read(userProvider.notifier)
+                          .updateUser(
+                            name: firebaseUser.displayName ?? 'User',
+                            gender: '', // Will be set in complete profile
+                            email: firebaseUser.email ?? '',
+                            photoUrl: firebaseUser.photoURL,
+                            id: firebaseUser.uid,
+                          );
+
+                      ref.read(navigationProvider.notifier).goToHome();
+                    }
+                  } catch (e) {
+                    debugPrint("Google login error: $e");
+                  }
+                },
               ),
 
               const SizedBox(height: 24),
@@ -110,25 +142,25 @@ class AuthScreen extends ConsumerWidget {
                   child: const Icon(Icons.smartphone, color: Colors.black87),
                 ),
               ),
-              ElevatedButton(
-                onPressed: () {
-                  ref.read(navigationProvider.notifier).goToCompleteProfile();
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.transparent,
-                  foregroundColor: Colors.teal[400],
-                  elevation: 0,
-                  shadowColor: Colors.transparent,
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 12,
-                    horizontal: 24,
-                  ),
-                ),
-                child: const Text(
-                  "Login as a guest",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                ),
-              ),
+              // ElevatedButton(
+              //   onPressed: () {
+              //     ref.read(navigationProvider.notifier).goToCompleteProfile();
+              //   },
+              //   style: ElevatedButton.styleFrom(
+              //     backgroundColor: Colors.transparent,
+              //     foregroundColor: Colors.teal[400],
+              //     elevation: 0,
+              //     shadowColor: Colors.transparent,
+              //     padding: const EdgeInsets.symmetric(
+              //       vertical: 12,
+              //       horizontal: 24,
+              //     ),
+              //   ),
+              //   child: const Text(
+              //     "Login as a guest",
+              //     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              //   ),
+              // ),
               const Spacer(flex: 2),
 
               // Footer Legal Text

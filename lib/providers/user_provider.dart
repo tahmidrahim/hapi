@@ -7,15 +7,26 @@ final userProvider = StateNotifierProvider<UserNotifier, UserModel>((ref) {
 });
 
 class UserNotifier extends StateNotifier<UserModel> {
-  UserNotifier() : super(UserModel(name: '', gender: '', id: _generateId()));
+  UserNotifier() : super(UserModel(name: '', gender: '', id: '', email: ''));
 
-  void updateUser(String name, String gender) {
-    state = state.copyWith(name: name, gender: gender);
+  void updateUser({
+    required String name,
+    required String gender,
+    String? email,
+    String? photoUrl,
+    String? id,
+  }) {
+    state = state.copyWith(
+      name: name,
+      gender: gender,
+      email: email ?? state.email,
+      photoUrl: photoUrl ?? state.photoUrl,
+      id: id ?? state.id,
+    );
   }
 
-  static String _generateId() {
-    final random = Random();
-    return random.nextInt(1000000).toString().padLeft(6, '0');
+  void updateGender(String gender) {
+    state = state.copyWith(gender: gender);
   }
 }
 
@@ -23,26 +34,30 @@ class UserModel {
   final String name;
   final String gender;
   final String id;
-  final String? profilePic;
+  final String email;
+  final String? photoUrl;
 
   UserModel({
     required this.name,
     required this.gender,
     required this.id,
-    this.profilePic,
+    required this.email,
+    this.photoUrl,
   });
 
   UserModel copyWith({
     String? name,
     String? gender,
     String? id,
-    String? profilePic,
+    String? email,
+    String? photoUrl,
   }) {
     return UserModel(
       name: name ?? this.name,
       gender: gender ?? this.gender,
       id: id ?? this.id,
-      profilePic: profilePic ?? this.profilePic,
+      email: email ?? this.email,
+      photoUrl: photoUrl ?? this.photoUrl,
     );
   }
 }
