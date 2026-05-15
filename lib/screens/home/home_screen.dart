@@ -33,16 +33,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       'title': 'CR7 Fans Club',
       'viewers': '1.2K',
       'level': '39',
-      'imageUrl':
-          'https://upload.wikimedia.org/wikipedia/commons/8/8c/Cristiano_Ronaldo_2018.jpg',
+      'imageUrl': 'https://randomuser.me/api/portraits/men/1.jpg',
     },
     {
       'hostName': 'Lionel Messi',
       'title': 'Messi Magic',
       'viewers': '980',
       'level': '36',
-      'imageUrl':
-          'https://upload.wikimedia.org/wikipedia/commons/c/c1/Lionel_Messi_20180626.jpg',
+      'imageUrl': 'https://randomuser.me/api/portraits/men/2.jpg',
     },
     {
       'hostName': 'Neymar Jr',
@@ -50,31 +48,28 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       'viewers': '856',
       'level': '32',
       'imageUrl':
-          'https://upload.wikimedia.org/wikipedia/commons/b/b1/Neymar_2018.jpg',
+          'https://upload.wikimedia.org/wikipedia/commons/thumb/b/bb/Neymar_Jr._with_Al_Hilal%2C_3_October_2023_-_03_%28cropped%29.jpg/250px-Neymar_Jr._with_Al_Hilal%2C_3_October_2023_-_03_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=parser&utm_content=thumbnail',
     },
     {
       'hostName': 'Kylian Mbappe',
       'title': 'Speed King',
       'viewers': '2.1K',
       'level': '28',
-      'imageUrl':
-          'https://upload.wikimedia.org/wikipedia/commons/7/7e/Kylian_Mbapp%C3%A9_2018.jpg',
+      'imageUrl': 'https://randomuser.me/api/portraits/men/4.jpg',
     },
     {
       'hostName': 'Erling Haaland',
       'title': 'Goal Machine',
       'viewers': '1.8K',
       'level': '27',
-      'imageUrl':
-          'https://upload.wikimedia.org/wikipedia/commons/6/6c/Erling_Haaland_2023.jpg',
+      'imageUrl': 'https://randomuser.me/api/portraits/men/5.jpg',
     },
     {
       'hostName': 'Kevin De Bruyne',
       'title': 'Masterclass',
       'viewers': '654',
       'level': '33',
-      'imageUrl':
-          'https://upload.wikimedia.org/wikipedia/commons/5/5e/Kevin_De_Bruyne_2018.jpg',
+      'imageUrl': 'https://randomuser.me/api/portraits/men/6.jpg',
     },
   ];
 

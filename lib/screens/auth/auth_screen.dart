@@ -1,9 +1,8 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hapi/providers/navigation_provider.dart';
 import 'package:hapi/providers/user_provider.dart';
-import 'package:hapi/screens/auth/auth_service.dart';
+import 'package:hapi/services/auth_service.dart';
 
 class AuthScreen extends ConsumerWidget {
   AuthScreen({super.key});
@@ -97,14 +96,15 @@ class AuthScreen extends ConsumerWidget {
                     if (userCredential != null && userCredential.user != null) {
                       final firebaseUser = userCredential.user!;
 
-                      // Save user data to provider
+                      // Save user data including photo URL
                       ref
                           .read(userProvider.notifier)
                           .updateUser(
                             name: firebaseUser.displayName ?? 'User',
-                            gender: '', // Will be set in complete profile
+                            gender: '',
                             email: firebaseUser.email ?? '',
-                            photoUrl: firebaseUser.photoURL,
+                            photoUrl: firebaseUser
+                                .photoURL, // This gets the Google profile image
                             id: firebaseUser.uid,
                           );
 

@@ -24,10 +24,6 @@ class UserNotifier extends StateNotifier<UserModel> {
       id: id ?? state.id,
     );
   }
-
-  void updateGender(String gender) {
-    state = state.copyWith(gender: gender);
-  }
 }
 
 class UserModel {

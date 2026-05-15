@@ -38,12 +38,12 @@ class MyApp extends ConsumerWidget {
   }
 
   Widget _getScreen(String route) {
-    // Handle edit room name route
+    // edit room name route
     if (route == '/edit-room-name') {
       return const EditRoomNameScreen();
     }
 
-    // Handle voice-room routes
+    //voice-room routes
     if (route.startsWith('/voice-room')) {
       final uri = Uri.parse(route);
       final roomId = uri.queryParameters['roomId'] ?? '';

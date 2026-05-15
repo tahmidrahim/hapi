@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hapi/providers/user_provider.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -53,11 +54,13 @@ class ProfileScreen extends ConsumerWidget {
                   leading: CircleAvatar(
                     radius: 35,
                     backgroundColor: Colors.grey[300],
-                    child: const Icon(
-                      Icons.person,
-                      size: 35,
-                      color: Colors.grey,
-                    ),
+                    backgroundImage:
+                        user.photoUrl != null && user.photoUrl!.isNotEmpty
+                        ? CachedNetworkImageProvider(user.photoUrl!)
+                        : null,
+                    child: user.photoUrl == null || user.photoUrl!.isEmpty
+                        ? const Icon(Icons.person, size: 35, color: Colors.grey)
+                        : null,
                   ),
                   title: Text(
                     user.name.isNotEmpty ? user.name : 'No name set',
