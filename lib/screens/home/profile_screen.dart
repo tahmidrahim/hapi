@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hapi/providers/user_provider.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:hapi/widgets/animated_avatar.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -51,16 +51,10 @@ class ProfileScreen extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ListTile(
-                  leading: CircleAvatar(
+                  leading: AnimatedAvatar(
+                    imageUrl: user.photoUrl,
                     radius: 35,
-                    backgroundColor: Colors.grey[300],
-                    backgroundImage:
-                        user.photoUrl != null && user.photoUrl!.isNotEmpty
-                        ? CachedNetworkImageProvider(user.photoUrl!)
-                        : null,
-                    child: user.photoUrl == null || user.photoUrl!.isEmpty
-                        ? const Icon(Icons.person, size: 35, color: Colors.grey)
-                        : null,
+                    animationSize: 80,
                   ),
                   title: Text(
                     user.name.isNotEmpty ? user.name : 'No name set',

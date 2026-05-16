@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hapi/providers/navigation_provider.dart';
 import 'package:hapi/screens/call/edit_room_name_dialog.dart';
 import 'package:hapi/screens/call/voice_room_screen.dart';
+import 'package:hapi/screens/game/game_screen.dart';
 import 'package:hapi/screens/home/profile_screen.dart';
 import 'package:hapi/screens/message/message_screen.dart';
 
@@ -200,9 +201,28 @@ class _HomeContentState extends State<HomeContent> {
             ),
           ),
         ),
-        _buildLiveRoomsGrid(),
+        // Show different content based on selected tab
+        _buildSelectedContent(),
       ],
     );
+  }
+
+  Widget _buildSelectedContent() {
+    if (_selectedCategory == 'Game') {
+      // Return Game Content
+      return SliverPadding(
+        padding: const EdgeInsets.all(12),
+        sliver: SliverToBoxAdapter(
+          child: GameContent(), // Your GameContent widget
+        ),
+      );
+    } else if (_selectedCategory == 'Video/Music') {
+      // Return Video/Music content (can use same as Popular for now)
+      return _buildLiveRoomsGrid();
+    } else {
+      // Popular - Show voice rooms
+      return _buildLiveRoomsGrid();
+    }
   }
 
   Widget _buildAppBar() {

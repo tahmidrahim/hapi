@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hapi/providers/navigation_provider.dart';
 import 'package:hapi/providers/user_provider.dart';
 import 'package:hapi/services/agora_service.dart';
+import 'package:hapi/widgets/animated_avatar.dart';
+import 'package:hapi/widgets/animation.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class VoiceRoomScreen extends ConsumerStatefulWidget {
@@ -227,11 +229,9 @@ class _VoiceRoomScreenState extends ConsumerState<VoiceRoomScreen>
             ),
             child: Row(
               children: [
-                CircleAvatar(
+                const CircleAvatar(
                   radius: 12,
-                  backgroundImage: user.photoUrl != null
-                      ? NetworkImage(user.photoUrl!)
-                      : const AssetImage('assets/profile.png') as ImageProvider,
+                  backgroundImage: AssetImage('assets/profile.png'),
                 ),
                 const SizedBox(width: 8),
                 Column(
@@ -244,12 +244,34 @@ class _VoiceRoomScreenState extends ConsumerState<VoiceRoomScreen>
                           : user.name,
                       style: const TextStyle(color: Colors.white, fontSize: 10),
                     ),
-                    Text(
-                      "ID:${user.id}  👤$_participantCount",
-                      style: const TextStyle(
-                        color: Colors.white70,
-                        fontSize: 8,
-                      ),
+                    Row(
+                      children: [
+                        const Text(
+                          "ID: ",
+                          style: TextStyle(color: Colors.white70, fontSize: 8),
+                        ),
+                        Text(
+                          user.id.length > 10
+                              ? "${user.id.substring(0, 8)}..."
+                              : user.id,
+                          style: const TextStyle(
+                            color: Colors.white70,
+                            fontSize: 8,
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        // SVGA Animation - ADD THIS
+                        SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: SvgaAnimation(
+                            assetPath: 'assets/animation_1778864976525.svga',
+                            width: 16,
+                            height: 16,
+                            loop: true,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -277,12 +299,7 @@ class _VoiceRoomScreenState extends ConsumerState<VoiceRoomScreen>
   Widget _buildHostSection(UserModel user) {
     return Column(
       children: [
-        CircleAvatar(
-          radius: 35,
-          backgroundImage: user.photoUrl != null
-              ? NetworkImage(user.photoUrl!)
-              : const AssetImage('assets/profile.png') as ImageProvider,
-        ),
+        AnimatedAvatar(imageUrl: user.photoUrl, radius: 32, animationSize: 76),
         const SizedBox(height: 8),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,

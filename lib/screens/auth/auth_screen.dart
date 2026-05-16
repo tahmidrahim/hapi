@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hapi/providers/auth_provider.dart';
 import 'package:hapi/providers/navigation_provider.dart';
 import 'package:hapi/providers/user_provider.dart';
 import 'package:hapi/services/auth_service.dart';
@@ -88,32 +89,7 @@ class AuthScreen extends ConsumerWidget {
                     .g_mobiledata_rounded, // Use an SVG for a better Google icon
                 iconColor: Colors.red,
                 label: 'Google',
-                onTap: () async {
-                  try {
-                    final userCredential = await _authService
-                        .signInWithGoogle();
-
-                    if (userCredential != null && userCredential.user != null) {
-                      final firebaseUser = userCredential.user!;
-
-                      // Save user data including photo URL
-                      ref
-                          .read(userProvider.notifier)
-                          .updateUser(
-                            name: firebaseUser.displayName ?? 'User',
-                            gender: '',
-                            email: firebaseUser.email ?? '',
-                            photoUrl: firebaseUser
-                                .photoURL, // This gets the Google profile image
-                            id: firebaseUser.uid,
-                          );
-
-                      ref.read(navigationProvider.notifier).goToHome();
-                    }
-                  } catch (e) {
-                    debugPrint("Google login error: $e");
-                  }
-                },
+                onTap: () => ref.read(authProvider.notifier).signInWithGoogle(),
               ),
 
               const SizedBox(height: 24),

@@ -16,6 +16,12 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
   String? profileImageUrl;
   String selectedGender = '';
   final TextEditingController _nameController = TextEditingController();
+  @override
+  void initState() {
+    super.initState();
+    final user = ref.read(userProvider);
+    _nameController.text = user.name;
+  }
 
   @override
   void dispose() {

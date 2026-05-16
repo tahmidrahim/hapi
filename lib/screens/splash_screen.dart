@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:lottie/lottie.dart'; // Add this package
+// Add this package
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -9,7 +9,8 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
+class _SplashScreenState extends State<SplashScreen>
+    with SingleTickerProviderStateMixin {
   late AnimationController _scaleController;
   late Animation<double> _scaleAnimation;
 
@@ -20,13 +21,13 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
       vsync: this,
       duration: const Duration(seconds: 2),
     );
-    
+
     _scaleAnimation = Tween<double>(begin: 0.5, end: 1.0).animate(
       CurvedAnimation(parent: _scaleController, curve: Curves.elasticOut),
     );
-    
+
     _scaleController.forward();
-    
+
     // Navigate after 2.5 seconds
     Future.delayed(const Duration(seconds: 3), () {
       Navigator.pushReplacementNamed(context, '/login');
@@ -90,10 +91,7 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
               tween: Tween<double>(begin: 0, end: 1),
               duration: const Duration(seconds: 2),
               builder: (context, value, child) {
-                return Opacity(
-                  opacity: value,
-                  child: child,
-                );
+                return Opacity(opacity: value, child: child);
               },
               child: const Text(
                 'Connect with friends',

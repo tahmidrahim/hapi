@@ -8,6 +8,10 @@ final navigationProvider = StateNotifierProvider<NavigationNotifier, String>((
 
 class NavigationNotifier extends StateNotifier<String> {
   NavigationNotifier() : super('/login');
+  void goToLogin() {
+    // ← ADD THIS
+    state = '/login';
+  }
 
   void goToCompleteProfile() {
     state = '/complete-profile';
