@@ -53,8 +53,8 @@ class ProfileScreen extends ConsumerWidget {
                 ListTile(
                   leading: AnimatedAvatar(
                     imageUrl: user.photoUrl,
-                    radius: 35,
-                    animationSize: 80,
+                    radius: 20,
+                    animationSize: 74,
                   ),
                   title: Text(
                     user.name.isNotEmpty ? user.name : 'No name set',

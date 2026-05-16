@@ -30,7 +30,10 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
   }
 
   @override
+  @override
   Widget build(BuildContext context) {
+    final user = ref.watch(userProvider);
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -56,10 +59,11 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
                   CircleAvatar(
                     radius: 50,
                     backgroundColor: Colors.grey[200],
-                    backgroundImage: profileImageUrl != null
-                        ? NetworkImage(profileImageUrl!)
+                    backgroundImage:
+                        user.photoUrl != null && user.photoUrl!.isNotEmpty
+                        ? NetworkImage(user.photoUrl!)
                         : null,
-                    child: profileImageUrl == null
+                    child: user.photoUrl == null || user.photoUrl!.isEmpty
                         ? const Icon(Icons.person, size: 50, color: Colors.grey)
                         : null,
                   ),

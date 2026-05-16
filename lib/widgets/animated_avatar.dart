@@ -15,28 +15,28 @@ class AnimatedAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        // Animated border ring
-        SizedBox(
-          width: animationSize,
-          height: animationSize,
-          child: SvgaAnimation(
+    return SizedBox(
+      width: animationSize,
+      height: animationSize,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          // Animated border (behind the avatar)
+          SvgaAnimation(
             assetPath: 'assets/animation_1778864976525.svga',
             width: animationSize,
             height: animationSize,
             loop: true,
           ),
-        ),
-        // Profile picture
-        CircleAvatar(
-          radius: radius,
-          backgroundImage: imageUrl != null && imageUrl!.isNotEmpty
-              ? NetworkImage(imageUrl!)
-              : const AssetImage('assets/profile.png') as ImageProvider,
-        ),
-      ],
+          // Profile picture (on top)
+          CircleAvatar(
+            radius: radius,
+            backgroundImage: imageUrl != null && imageUrl!.isNotEmpty
+                ? NetworkImage(imageUrl!)
+                : const AssetImage('assets/profile.png') as ImageProvider,
+          ),
+        ],
+      ),
     );
   }
 }

@@ -25,6 +25,7 @@ class _SvgaAnimationState extends State<SvgaAnimation>
     with SingleTickerProviderStateMixin {
   late SVGAAnimationController _controller;
   MovieEntity? _movieEntity;
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -34,19 +35,27 @@ class _SvgaAnimationState extends State<SvgaAnimation>
   }
 
   Future<void> _loadSVGA() async {
-    final movieEntity = await SVGAParser.shared.decodeFromAssets(
-      widget.assetPath,
-    );
-    if (mounted) {
-      setState(() {
-        _movieEntity = movieEntity;
-        _controller.videoItem = movieEntity;
-        if (widget.loop) {
-          _controller.repeat();
-        } else {
-          _controller.forward();
-        }
-      });
+    try {
+      final movieEntity = await SVGAParser.shared.decodeFromAssets(
+        widget.assetPath,
+      );
+      if (mounted) {
+        setState(() {
+          _movieEntity = movieEntity;
+          _controller.videoItem = movieEntity;
+          if (widget.loop) {
+            _controller.repeat();
+          } else {
+            _controller.forward();
+          }
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      print("Error loading SVGA: $e");
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
     }
   }
 
@@ -58,7 +67,7 @@ class _SvgaAnimationState extends State<SvgaAnimation>
 
   @override
   Widget build(BuildContext context) {
-    if (_movieEntity == null) {
+    if (_isLoading || _movieEntity == null) {
       return SizedBox(width: widget.width, height: widget.height);
     }
     return SVGAImage(

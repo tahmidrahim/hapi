@@ -221,62 +221,42 @@ class _VoiceRoomScreenState extends ConsumerState<VoiceRoomScreen>
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Row(
         children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color: Colors.black26,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Row(
-              children: [
-                const CircleAvatar(
-                  radius: 12,
-                  backgroundImage: AssetImage('assets/profile.png'),
+          // Animated Avatar in top left corner
+          AnimatedAvatar(
+            imageUrl: user.photoUrl,
+            radius: 11,
+            animationSize: 32,
+          ),
+          const SizedBox(width: 12),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                user.name.length > 15
+                    ? "${user.name.substring(0, 15)}..."
+                    : user.name,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
                 ),
-                const SizedBox(width: 8),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      user.name.length > 15
-                          ? "${user.name.substring(0, 15)}..."
-                          : user.name,
-                      style: const TextStyle(color: Colors.white, fontSize: 10),
-                    ),
-                    Row(
-                      children: [
-                        const Text(
-                          "ID: ",
-                          style: TextStyle(color: Colors.white70, fontSize: 8),
-                        ),
-                        Text(
-                          user.id.length > 10
-                              ? "${user.id.substring(0, 8)}..."
-                              : user.id,
-                          style: const TextStyle(
-                            color: Colors.white70,
-                            fontSize: 8,
-                          ),
-                        ),
-                        const SizedBox(width: 4),
-                        // SVGA Animation - ADD THIS
-                        SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: SvgaAnimation(
-                            assetPath: 'assets/animation_1778864976525.svga',
-                            width: 16,
-                            height: 16,
-                            loop: true,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ],
-            ),
+              ),
+              Row(
+                children: [
+                  const Text(
+                    "ID: ",
+                    style: TextStyle(color: Colors.white70, fontSize: 10),
+                  ),
+                  Text(
+                    user.id.length > 10
+                        ? "${user.id.substring(0, 8)}..."
+                        : user.id,
+                    style: const TextStyle(color: Colors.white70, fontSize: 10),
+                  ),
+                ],
+              ),
+            ],
           ),
           const Spacer(),
           const Icon(Icons.settings_outlined, color: Colors.white, size: 20),
@@ -299,7 +279,7 @@ class _VoiceRoomScreenState extends ConsumerState<VoiceRoomScreen>
   Widget _buildHostSection(UserModel user) {
     return Column(
       children: [
-        AnimatedAvatar(imageUrl: user.photoUrl, radius: 32, animationSize: 76),
+        AnimatedAvatar(imageUrl: user.photoUrl, radius: 26, animationSize: 76),
         const SizedBox(height: 8),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
