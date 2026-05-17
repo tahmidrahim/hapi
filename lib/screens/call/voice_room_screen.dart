@@ -4,7 +4,7 @@ import 'package:hapi/providers/navigation_provider.dart';
 import 'package:hapi/providers/user_provider.dart';
 import 'package:hapi/services/agora_service.dart';
 import 'package:hapi/widgets/animated_avatar.dart';
-import 'package:hapi/widgets/animation.dart';
+
 import 'package:permission_handler/permission_handler.dart';
 
 class VoiceRoomScreen extends ConsumerStatefulWidget {
@@ -22,7 +22,7 @@ class _VoiceRoomScreenState extends ConsumerState<VoiceRoomScreen>
   bool _isMuted = false;
   bool _isSpeakerOn = true;
   bool _isConnected = false;
-  int _participantCount = 1;
+
   String _connectionStatus = 'Connecting...';
 
   // Animation Controllers

@@ -19,8 +19,8 @@ class _CompleteProfileScreenState extends ConsumerState<CompleteProfileScreen> {
   @override
   void initState() {
     super.initState();
-    final user = ref.read(userProvider);
-    _nameController.text = user.name;
+    // final user = ref.read(userProvider);
+    _nameController.text = "Alex";
   }
 
   @override

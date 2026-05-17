@@ -1,5 +1,3 @@
-// lib/providers/user_provider.dart
-import 'dart:math';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final userProvider = StateNotifierProvider<UserNotifier, UserModel>((ref) {

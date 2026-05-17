@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hapi/providers/navigation_provider.dart';
-import 'package:hapi/screens/call/edit_room_name_dialog.dart';
-import 'package:hapi/screens/call/voice_room_screen.dart';
 import 'package:hapi/screens/game/game_screen.dart';
 import 'package:hapi/screens/home/profile_screen.dart';
 import 'package:hapi/screens/message/message_screen.dart';

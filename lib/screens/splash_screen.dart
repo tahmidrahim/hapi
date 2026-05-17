@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-// Add this package
+
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});

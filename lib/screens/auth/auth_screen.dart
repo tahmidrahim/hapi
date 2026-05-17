@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hapi/providers/auth_provider.dart';
-import 'package:hapi/providers/navigation_provider.dart';
-import 'package:hapi/providers/user_provider.dart';
-import 'package:hapi/services/auth_service.dart';
 
 class AuthScreen extends ConsumerWidget {
-  AuthScreen({super.key});
-  final AuthService _authService = AuthService();
+  const AuthScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
