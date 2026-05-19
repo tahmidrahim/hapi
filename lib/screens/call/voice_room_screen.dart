@@ -4,7 +4,8 @@ import 'package:hapi/providers/navigation_provider.dart';
 import 'package:hapi/providers/user_provider.dart';
 import 'package:hapi/services/agora_service.dart';
 import 'package:hapi/widgets/animated_avatar.dart';
-
+import 'package:hapi/widgets/game/game_overlay.dart';
+import 'package:hapi/widgets/game/game_selector.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class VoiceRoomScreen extends ConsumerStatefulWidget {
@@ -22,7 +23,6 @@ class _VoiceRoomScreenState extends ConsumerState<VoiceRoomScreen>
   bool _isMuted = false;
   bool _isSpeakerOn = true;
   bool _isConnected = false;
-
   String _connectionStatus = 'Connecting...';
 
   // Animation Controllers
@@ -35,7 +35,6 @@ class _VoiceRoomScreenState extends ConsumerState<VoiceRoomScreen>
   void initState() {
     super.initState();
 
-    // 1. Setup Pulse Animation (For the speaking halo effect)
     _pulseController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1200),
@@ -45,7 +44,6 @@ class _VoiceRoomScreenState extends ConsumerState<VoiceRoomScreen>
       CurvedAnimation(parent: _pulseController, curve: Curves.easeInOutCirc),
     );
 
-    // 2. Setup Mic Wave Animation (For the icon opacity flicker)
     _micWaveController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 600),
@@ -155,6 +153,58 @@ class _VoiceRoomScreenState extends ConsumerState<VoiceRoomScreen>
     );
   }
 
+  void _openGameSelector() {
+    final user = ref.read(userProvider);
+    GameSelector.show(context, user.id);
+  }
+
+  Widget _gameMenuItem(String title, IconData icon, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        children: [
+          Container(
+            width: 55,
+            height: 55,
+            decoration: BoxDecoration(
+              color: Colors.grey[800],
+              borderRadius: BorderRadius.circular(15),
+            ),
+            child: Icon(icon, color: const Color(0xFF1DE9B6), size: 28),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            title,
+            style: const TextStyle(color: Colors.white70, fontSize: 11),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _openGame(String gameUrl, String gameName) {
+    showDialog(
+      context: context,
+      builder: (context) => GameOverlay(gameUrl: gameUrl, gameName: gameName),
+    );
+  }
+
+  Widget _buildGameOption(String name, String url, String userId) {
+    final gameUrl = "$url?userid=$userId&token=187871878";
+
+    return ListTile(
+      leading: const Icon(Icons.gamepad, color: Color(0xFF1DE9B6)),
+      title: Text(name, style: const TextStyle(color: Colors.white)),
+      onTap: () {
+        Navigator.pop(context);
+        showDialog(
+          context: context,
+          builder: (context) => GameOverlay(gameUrl: gameUrl, gameName: name),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(userProvider);
@@ -166,7 +216,7 @@ class _VoiceRoomScreenState extends ConsumerState<VoiceRoomScreen>
           Container(
             decoration: const BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('assets/aurora_bg.png'),
+                image: AssetImage('assets/bg.jpg'),
                 fit: BoxFit.cover,
               ),
             ),
@@ -221,7 +271,6 @@ class _VoiceRoomScreenState extends ConsumerState<VoiceRoomScreen>
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Row(
         children: [
-          // Animated Avatar in top left corner
           AnimatedAvatar(
             imageUrl: user.photoUrl,
             radius: 11,
@@ -313,7 +362,6 @@ class _VoiceRoomScreenState extends ConsumerState<VoiceRoomScreen>
         itemCount: 8,
         itemBuilder: (context, index) {
           final isUserSeat = index == 0;
-
           return Column(
             children: [
               AnimatedBuilder(
@@ -453,11 +501,7 @@ class _VoiceRoomScreenState extends ConsumerState<VoiceRoomScreen>
             color: _isMuted ? Colors.red : Colors.white,
             onTap: _toggleMute,
           ),
-          _toolbarButton(
-            icon: Icons.chat_bubble_outline,
-            label: 'Chat',
-            onTap: () {},
-          ),
+
           _toolbarButton(
             icon: Icons.emoji_emotions_outlined,
             label: 'Emoji',
@@ -468,6 +512,12 @@ class _VoiceRoomScreenState extends ConsumerState<VoiceRoomScreen>
             label: 'Exit',
             color: Colors.red,
             onTap: _showExitOptions,
+          ),
+          _toolbarButton(
+            icon: Icons.grid_view_rounded,
+            label: 'Game',
+            color: Colors.white,
+            onTap: _openGameSelector,
           ),
         ],
       ),

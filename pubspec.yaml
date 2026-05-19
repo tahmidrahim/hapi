@@ -73,6 +73,7 @@ flutter:
   assets:
     - assets/logo.png
     - assets/animation_1778864976525.svga
+    - assets/bg.jpg
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 
