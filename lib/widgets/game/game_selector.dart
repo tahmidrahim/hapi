@@ -8,7 +8,7 @@ class GameSelector {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
-      isScrollControlled: true, // Allows content wrapping
+      isScrollControlled: true,
       builder: (context) => FutureBuilder<List<GameModel>>(
         future: GameApiService().fetchGames(),
         builder: (context, snapshot) {
@@ -44,7 +44,7 @@ class GameSelector {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Pull Bar / Notch Indicator (Top Center)
+                // Pull Bar / Notch Indicator
                 Center(
                   child: Container(
                     width: 38,
@@ -57,7 +57,7 @@ class GameSelector {
                   ),
                 ),
 
-                // Section Title matching the SS style
+                // Section Title
                 const Text(
                   'Party Game',
                   style: TextStyle(
@@ -68,33 +68,24 @@ class GameSelector {
                 ),
                 const SizedBox(height: 16),
 
-                // Dynamic 4-column Grid for your backend games list
+                // Dynamic Grid from API
                 GridView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: games.length,
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount:
-                        4, // 4 games per row matching the screenshot
+                    crossAxisCount: 4,
                     mainAxisSpacing: 16,
                     crossAxisSpacing: 12,
-                    childAspectRatio: 0.8, // Elegant vertical profile ratio
+                    childAspectRatio: 0.8,
                   ),
                   itemBuilder: (context, index) {
                     final game = games[index];
-                    return _gameItem(
-                      context,
-                      game.name,
-                      _getGameIcon(game.name),
-                      _getGameColor(game.name),
-                      () {
-                        Navigator.pop(context);
-                        final gameUrl =
-                            // "${game.curl}?userid=$userId&token=187871878";
-                            "${game.curl}?userid=2?token=187871878";
-                        _openGame(context, gameUrl, game.name);
-                      },
-                    );
+                    return _gameItem(context, game.name, () {
+                      Navigator.pop(context);
+                      final gameUrl = "${game.curl}?userid=2&token=187871878";
+                      _openGame(context, gameUrl, game.name);
+                    });
                   },
                 ),
                 const SizedBox(height: 16),
@@ -106,7 +97,6 @@ class GameSelector {
     );
   }
 
-  // Edge-to-edge pure white presentation container wrapping your content safely
   static Widget _buildSheetWrapper({required Widget child}) {
     return Container(
       width: double.infinity,
@@ -119,39 +109,9 @@ class GameSelector {
     );
   }
 
-  // Color dynamic assignment to give game boxes that rich distinct UI pop
-  static Color _getGameColor(String name) {
-    switch (name.toLowerCase()) {
-      case 'lucky fruit':
-        return const Color(0xFFFF5252); // Soft Vibrant Red
-      case 'ludo':
-        return const Color(0xFFFFB300); // Amber Yellow
-      case 'super 777':
-        return const Color(0xFFE040FB); // Neon Purple
-      default:
-        return const Color(0xFF1DE9B6); // Teal Hapi Accent
-    }
-  }
-
-  static IconData _getGameIcon(String gameName) {
-    switch (gameName.toLowerCase()) {
-      case 'super 777':
-        return Icons.casino;
-      case 'lucky fruit':
-        return Icons.blur_on;
-      case 'ludo':
-        return Icons.extension;
-      default:
-        return Icons.videogame_asset;
-    }
-  }
-
-  // Custom UI block rendering elegant background layers and text limits
   static Widget _gameItem(
     BuildContext context,
     String title,
-    IconData icon,
-    Color accentColor,
     VoidCallback onTap,
   ) {
     return GestureDetector(
@@ -163,9 +123,7 @@ class GameSelector {
             width: 62,
             height: 62,
             decoration: BoxDecoration(
-              color: accentColor.withOpacity(
-                0.12,
-              ), // Subtle elegant color tint background
+              color: Colors.grey[100],
               borderRadius: BorderRadius.circular(18),
               boxShadow: [
                 BoxShadow(
@@ -175,7 +133,11 @@ class GameSelector {
                 ),
               ],
             ),
-            child: Icon(icon, color: accentColor, size: 30),
+            child: const Icon(
+              Icons.gamepad,
+              color: Color(0xFF1DE9B6),
+              size: 30,
+            ),
           ),
           const SizedBox(height: 8),
           Expanded(
@@ -197,10 +159,6 @@ class GameSelector {
   }
 
   static void _openGame(BuildContext context, String gameUrl, String gameName) {
-    GameOverlay.show(
-      context,
-      gameUrl,
-      gameName,
-    ); // Use bottom sheet instead of dialog
+    GameOverlay.show(context, gameUrl, gameName);
   }
 }

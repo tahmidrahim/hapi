@@ -4,8 +4,8 @@ import 'package:hapi/providers/navigation_provider.dart';
 import 'package:hapi/screens/game/game_screen.dart';
 import 'package:hapi/screens/home/profile_screen.dart';
 import 'package:hapi/screens/message/message_screen.dart';
+import 'package:hapi/widgets/custom/hapi_button.dart';
 
-// Provider to ensure the dialog only shows once per session
 final dailyRewardShownProvider = StateProvider<bool>((ref) => false);
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -25,7 +25,56 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     const ProfileScreen(),
   ];
 
-  // In a real app, this data would come from a Firestore StreamProvider
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final hasShown = ref.read(dailyRewardShownProvider);
+      if (!hasShown) {
+        _showDailyRewardPopup();
+      }
+    });
+  }
+
+  void _showDailyRewardPopup() {
+    ref.read(dailyRewardShownProvider.notifier).state = true;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFFF1F5F9),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () =>
+            ref.read(navigationProvider.notifier).goToEditRoomName(),
+        backgroundColor: const Color(0xFF1DE9B6),
+        child: const Icon(Icons.mic, color: Colors.white),
+      ),
+      body: _screens[_selectedTab],
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedTab,
+        selectedItemColor: const Color(0xFF1DE9B6),
+        onTap: (index) => setState(() => _selectedTab = index),
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.chat), label: 'Message'),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Me'),
+        ],
+      ),
+    );
+  }
+}
+
+class HomeContent extends StatefulWidget {
+  const HomeContent({super.key});
+
+  @override
+  State<HomeContent> createState() => _HomeContentState();
+}
+
+class _HomeContentState extends State<HomeContent> {
+  String _selectedCategory = 'Popular';
+
   final List<Map<String, dynamic>> _liveRooms = [
     {
       'hostName': 'Cristiano Ronaldo',
@@ -46,8 +95,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       'title': 'Brazilian Skills',
       'viewers': '856',
       'level': '32',
-      'imageUrl':
-          'https://upload.wikimedia.org/wikipedia/commons/thumb/b/bb/Neymar_Jr._with_Al_Hilal%2C_3_October_2023_-_03_%28cropped%29.jpg/250px-Neymar_Jr._with_Al_Hilal%2C_3_October_2023_-_03_%28cropped%29.jpg?utm_source=en.wikipedia.org&utm_campaign=parser&utm_content=thumbnail',
+      'imageUrl': 'https://randomuser.me/api/portraits/men/3.jpg',
     },
     {
       'hostName': 'Kylian Mbappe',
@@ -73,114 +121,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   ];
 
   @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final hasShown = ref.read(dailyRewardShownProvider);
-      if (!hasShown) {
-        _showDailyRewardPopup();
-      }
-    });
-  }
-
-  void _showDailyRewardPopup() {
-    ref.read(dailyRewardShownProvider.notifier).state = true;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color(0xFFF1F5F9),
-      // In your HomeScreen (where you have the scaffold)
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          ref.read(navigationProvider.notifier).goToEditRoomName();
-        },
-        backgroundColor: const Color(0xFF1DE9B6),
-        child: const Icon(Icons.mic, color: Colors.white),
-      ),
-      body: _screens[_selectedTab],
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedTab,
-        selectedItemColor: const Color(0xFF1DE9B6),
-        onTap: (index) {
-          setState(() {
-            _selectedTab = index;
-          });
-        },
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.chat), label: 'Message'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Me'),
-        ],
-      ),
-    );
-  }
-}
-
-// Extract your home content to a separate widget
-class HomeContent extends StatefulWidget {
-  const HomeContent({super.key});
-
-  @override
-  State<HomeContent> createState() => _HomeContentState();
-}
-
-class _HomeContentState extends State<HomeContent> {
-  String _selectedCategory = 'Popular';
-
-  final List<Map<String, dynamic>> _liveRooms = [
-    {
-      'hostName': 'Cristiano Ronaldo',
-      'title': 'CR7 Fans Club',
-      'viewers': '1.2K',
-      'level': '39',
-      'imageUrl':
-          'https://upload.wikimedia.org/wikipedia/commons/8/8c/Cristiano_Ronaldo_2018.jpg',
-    },
-    {
-      'hostName': 'Lionel Messi',
-      'title': 'Messi Magic',
-      'viewers': '980',
-      'level': '36',
-      'imageUrl':
-          'https://upload.wikimedia.org/wikipedia/commons/c/c1/Lionel_Messi_20180626.jpg',
-    },
-    {
-      'hostName': 'Neymar Jr',
-      'title': 'Brazilian Skills',
-      'viewers': '856',
-      'level': '32',
-      'imageUrl':
-          'https://upload.wikimedia.org/wikipedia/commons/b/b1/Neymar_2018.jpg',
-    },
-    {
-      'hostName': 'Kylian Mbappe',
-      'title': 'Speed King',
-      'viewers': '2.1K',
-      'level': '28',
-      'imageUrl':
-          'https://upload.wikimedia.org/wikipedia/commons/7/7e/Kylian_Mbapp%C3%A9_2018.jpg',
-    },
-    {
-      'hostName': 'Erling Haaland',
-      'title': 'Goal Machine',
-      'viewers': '1.8K',
-      'level': '27',
-      'imageUrl':
-          'https://upload.wikimedia.org/wikipedia/commons/6/6c/Erling_Haaland_2023.jpg',
-    },
-    {
-      'hostName': 'Kevin De Bruyne',
-      'title': 'Masterclass',
-      'viewers': '654',
-      'level': '33',
-      'imageUrl':
-          'https://upload.wikimedia.org/wikipedia/commons/5/5e/Kevin_De_Bruyne_2018.jpg',
-    },
-  ];
-
-  @override
   Widget build(BuildContext context) {
     return CustomScrollView(
       slivers: [
@@ -199,7 +139,6 @@ class _HomeContentState extends State<HomeContent> {
             ),
           ),
         ),
-        // Show different content based on selected tab
         _buildSelectedContent(),
       ],
     );
@@ -207,20 +146,12 @@ class _HomeContentState extends State<HomeContent> {
 
   Widget _buildSelectedContent() {
     if (_selectedCategory == 'Game') {
-      // Return Game Content
       return SliverPadding(
         padding: const EdgeInsets.all(12),
-        sliver: SliverToBoxAdapter(
-          child: GameContent(), // Your GameContent widget
-        ),
+        sliver: SliverToBoxAdapter(child: GameContent()),
       );
-    } else if (_selectedCategory == 'Video/Music') {
-      // Return Video/Music content (can use same as Popular for now)
-      return _buildLiveRoomsGrid();
-    } else {
-      // Popular - Show voice rooms
-      return _buildLiveRoomsGrid();
     }
+    return _buildLiveRoomsGrid();
   }
 
   Widget _buildAppBar() {
@@ -359,17 +290,15 @@ class _HomeContentState extends State<HomeContent> {
   Widget _buildLiveRoomsGrid() {
     return SliverPadding(
       padding: const EdgeInsets.symmetric(horizontal: 12),
-      sliver: SliverGrid(
+      sliver: SliverGrid.builder(
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
           mainAxisSpacing: 12,
           crossAxisSpacing: 12,
           childAspectRatio: 0.85,
         ),
-        delegate: SliverChildBuilderDelegate((context, index) {
-          final room = _liveRooms[index % _liveRooms.length];
-          return _buildRoomCard(room);
-        }, childCount: 10),
+        itemCount: _liveRooms.length,
+        itemBuilder: (context, index) => _buildRoomCard(_liveRooms[index]),
       ),
     );
   }
@@ -430,15 +359,5 @@ class _HomeContentState extends State<HomeContent> {
         ],
       ),
     );
-  }
-}
-
-// Temporary placeholder for Message screen
-class MessagePlaceholder extends StatelessWidget {
-  const MessagePlaceholder({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(child: Text('Messages - Coming Soon'));
   }
 }

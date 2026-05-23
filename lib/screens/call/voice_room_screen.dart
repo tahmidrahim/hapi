@@ -6,6 +6,8 @@ import 'package:hapi/services/agora_service.dart';
 import 'package:hapi/widgets/animated_avatar.dart';
 import 'package:hapi/widgets/game/game_overlay.dart';
 import 'package:hapi/widgets/game/game_selector.dart';
+import 'package:hapi/widgets/custom/hapi_dialog.dart';
+import 'package:hapi/widgets/custom/hapi_loading.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class VoiceRoomScreen extends ConsumerStatefulWidget {
@@ -25,7 +27,6 @@ class _VoiceRoomScreenState extends ConsumerState<VoiceRoomScreen>
   bool _isConnected = false;
   String _connectionStatus = 'Connecting...';
 
-  // Animation Controllers
   late AnimationController _pulseController;
   late Animation<double> _pulseAnimation;
   late AnimationController _micWaveController;
@@ -34,7 +35,11 @@ class _VoiceRoomScreenState extends ConsumerState<VoiceRoomScreen>
   @override
   void initState() {
     super.initState();
+    _initAnimations();
+    _initVoiceChat();
+  }
 
+  void _initAnimations() {
     _pulseController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1200),
@@ -52,8 +57,6 @@ class _VoiceRoomScreenState extends ConsumerState<VoiceRoomScreen>
     _micWaveAnimation = Tween<double>(begin: 0.4, end: 1.0).animate(
       CurvedAnimation(parent: _micWaveController, curve: Curves.easeIn),
     );
-
-    _initVoiceChat();
   }
 
   @override
@@ -67,9 +70,7 @@ class _VoiceRoomScreenState extends ConsumerState<VoiceRoomScreen>
   Future<void> _initVoiceChat() async {
     final micStatus = await Permission.microphone.request();
     if (micStatus.isDenied) {
-      setState(() {
-        _connectionStatus = 'Microphone permission denied';
-      });
+      setState(() => _connectionStatus = 'Microphone permission denied');
       return;
     }
 
@@ -100,9 +101,7 @@ class _VoiceRoomScreenState extends ConsumerState<VoiceRoomScreen>
 
   void _toggleMute() async {
     await AgoraService.muteLocalAudio(!_isMuted);
-    setState(() {
-      _isMuted = !_isMuted;
-    });
+    setState(() => _isMuted = !_isMuted);
   }
 
   void _toggleSpeaker() async {
@@ -119,90 +118,22 @@ class _VoiceRoomScreenState extends ConsumerState<VoiceRoomScreen>
   }
 
   void _showExitOptions() {
-    showModalBottomSheet(
+    HapiDialog.showConfirm(
       context: context,
-      backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        margin: const EdgeInsets.all(16),
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.grey[900],
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(Icons.exit_to_app, color: Colors.white),
-              title: const Text('Exit', style: TextStyle(color: Colors.white)),
-              onTap: () {
-                Navigator.pop(context);
-                _exitRoom();
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.people, color: Colors.white),
-              title: const Text('Keep', style: TextStyle(color: Colors.white)),
-              onTap: () {
-                Navigator.pop(context);
-              },
-            ),
-          ],
-        ),
-      ),
-    );
+      title: 'Exit Room',
+      message: 'Do you want to exit the room?',
+      confirmText: 'Exit',
+      cancelText: 'Keep',
+    ).then((shouldExit) {
+      if (shouldExit == true) {
+        _exitRoom();
+      }
+    });
   }
 
   void _openGameSelector() {
     final user = ref.read(userProvider);
     GameSelector.show(context, user.id);
-  }
-
-  Widget _gameMenuItem(String title, IconData icon, VoidCallback onTap) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Column(
-        children: [
-          Container(
-            width: 55,
-            height: 55,
-            decoration: BoxDecoration(
-              color: Colors.grey[800],
-              borderRadius: BorderRadius.circular(15),
-            ),
-            child: Icon(icon, color: const Color(0xFF1DE9B6), size: 28),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            title,
-            style: const TextStyle(color: Colors.white70, fontSize: 11),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _openGame(String gameUrl, String gameName) {
-    showDialog(
-      context: context,
-      builder: (context) => GameOverlay(gameUrl: gameUrl, gameName: gameName),
-    );
-  }
-
-  Widget _buildGameOption(String name, String url, String userId) {
-    final gameUrl = "$url?userid=$userId&token=187871878";
-
-    return ListTile(
-      leading: const Icon(Icons.gamepad, color: Color(0xFF1DE9B6)),
-      title: Text(name, style: const TextStyle(color: Colors.white)),
-      onTap: () {
-        Navigator.pop(context);
-        showDialog(
-          context: context,
-          builder: (context) => GameOverlay(gameUrl: gameUrl, gameName: name),
-        );
-      },
-    );
   }
 
   @override
@@ -213,14 +144,7 @@ class _VoiceRoomScreenState extends ConsumerState<VoiceRoomScreen>
     return Scaffold(
       body: Stack(
         children: [
-          Container(
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/bg.jpg'),
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
+          _buildBackground(),
           Container(color: Colors.black.withOpacity(0.4)),
           SafeArea(
             child: Column(
@@ -243,15 +167,23 @@ class _VoiceRoomScreenState extends ConsumerState<VoiceRoomScreen>
     );
   }
 
+  Widget _buildBackground() {
+    return Container(
+      decoration: const BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage('assets/bg.jpg'),
+          fit: BoxFit.cover,
+        ),
+      ),
+    );
+  }
+
   Widget _buildStatusIndicator() {
-    Color statusColor;
-    if (_isConnected) {
-      statusColor = Colors.green;
-    } else if (_connectionStatus == 'Connection failed') {
-      statusColor = Colors.red;
-    } else {
-      statusColor = Colors.orange;
-    }
+    Color statusColor = _isConnected
+        ? Colors.green
+        : (_connectionStatus == 'Connection failed'
+              ? Colors.red
+              : Colors.orange);
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -277,35 +209,40 @@ class _VoiceRoomScreenState extends ConsumerState<VoiceRoomScreen>
             animationSize: 32,
           ),
           const SizedBox(width: 12),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                user.name.length > 15
-                    ? "${user.name.substring(0, 15)}..."
-                    : user.name,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  user.name.length > 15
+                      ? "${user.name.substring(0, 15)}..."
+                      : user.name,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
-              ),
-              Row(
-                children: [
-                  const Text(
-                    "ID: ",
-                    style: TextStyle(color: Colors.white70, fontSize: 10),
-                  ),
-                  Text(
-                    user.id.length > 10
-                        ? "${user.id.substring(0, 8)}..."
-                        : user.id,
-                    style: const TextStyle(color: Colors.white70, fontSize: 10),
-                  ),
-                ],
-              ),
-            ],
+                Row(
+                  children: [
+                    const Text(
+                      "ID: ",
+                      style: TextStyle(color: Colors.white70, fontSize: 10),
+                    ),
+                    Text(
+                      user.id.length > 10
+                          ? "${user.id.substring(0, 8)}..."
+                          : user.id,
+                      style: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: 10,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
           const Spacer(),
           const Icon(Icons.settings_outlined, color: Colors.white, size: 20),
@@ -399,16 +336,14 @@ class _VoiceRoomScreenState extends ConsumerState<VoiceRoomScreen>
                       child: (isUserSeat && isSpeaking)
                           ? AnimatedBuilder(
                               animation: _micWaveAnimation,
-                              builder: (context, child) {
-                                return Opacity(
-                                  opacity: _micWaveAnimation.value,
-                                  child: const Icon(
-                                    Icons.mic,
-                                    color: Color(0xFF1DE9B6),
-                                    size: 26,
-                                  ),
-                                );
-                              },
+                              builder: (context, child) => Opacity(
+                                opacity: _micWaveAnimation.value,
+                                child: const Icon(
+                                  Icons.mic,
+                                  color: Color(0xFF1DE9B6),
+                                  size: 26,
+                                ),
+                              ),
                             )
                           : Icon(
                               (isUserSeat && _isMuted)
@@ -490,44 +425,30 @@ class _VoiceRoomScreenState extends ConsumerState<VoiceRoomScreen>
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
+          _toolbarButton(Icons.volume_up, 'Sound', _toggleSpeaker),
           _toolbarButton(
-            icon: _isSpeakerOn ? Icons.volume_up : Icons.volume_down,
-            label: 'Sound',
-            onTap: _toggleSpeaker,
-          ),
-          _toolbarButton(
-            icon: _isMuted ? Icons.mic_off : Icons.mic,
-            label: _isMuted ? 'Unmute' : 'Mute',
+            _isMuted ? Icons.mic_off : Icons.mic,
+            _isMuted ? 'Unmute' : 'Mute',
+            _toggleMute,
             color: _isMuted ? Colors.red : Colors.white,
-            onTap: _toggleMute,
           ),
-
+          _toolbarButton(Icons.emoji_emotions_outlined, 'Emoji', () {}),
           _toolbarButton(
-            icon: Icons.emoji_emotions_outlined,
-            label: 'Emoji',
-            onTap: () {},
-          ),
-          _toolbarButton(
-            icon: Icons.logout,
-            label: 'Exit',
+            Icons.logout,
+            'Exit',
+            _showExitOptions,
             color: Colors.red,
-            onTap: _showExitOptions,
           ),
-          _toolbarButton(
-            icon: Icons.grid_view_rounded,
-            label: 'Game',
-            color: Colors.white,
-            onTap: _openGameSelector,
-          ),
+          _toolbarButton(Icons.grid_view_rounded, 'Game', _openGameSelector),
         ],
       ),
     );
   }
 
-  Widget _toolbarButton({
-    required IconData icon,
-    required String label,
-    required VoidCallback onTap,
+  Widget _toolbarButton(
+    IconData icon,
+    String label,
+    VoidCallback onTap, {
     Color color = Colors.white,
   }) {
     return GestureDetector(

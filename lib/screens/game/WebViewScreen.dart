@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:hapi/widgets/custom/hapi_dialog.dart';
+import 'package:hapi/widgets/custom/hapi_loading.dart';
 
 class GameWebViewScreen extends StatefulWidget {
   final String gameName;
@@ -25,17 +27,13 @@ class _GameWebViewScreenState extends State<GameWebViewScreen> {
   @override
   void initState() {
     super.initState();
-
-    // Hide status bar for fullscreen game
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
-
     _checkFirstLoad();
     _initWebView();
   }
 
   @override
   void dispose() {
-    // Restore status bar when exiting
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
     super.dispose();
   }
@@ -58,14 +56,10 @@ class _GameWebViewScreenState extends State<GameWebViewScreen> {
       ..setBackgroundColor(Colors.black)
       ..setNavigationDelegate(
         NavigationDelegate(
-          onPageStarted: (url) {
-            setState(() => isLoading = true);
-          },
+          onPageStarted: (url) => setState(() => isLoading = true),
           onPageFinished: (url) async {
             setState(() => isLoading = false);
-            if (isFirstLoad) {
-              await _markAsLoaded();
-            }
+            if (isFirstLoad) await _markAsLoaded();
           },
         ),
       )
@@ -79,57 +73,54 @@ class _GameWebViewScreenState extends State<GameWebViewScreen> {
       body: Stack(
         children: [
           WebViewWidget(controller: _controller),
-          if (isLoading)
-            Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const CircularProgressIndicator(color: Colors.white),
-                  const SizedBox(height: 16),
-                  Text(
-                    isFirstLoad
-                        ? 'Loading game...\nFirst time may take a moment'
-                        : 'Loading...',
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                ],
-              ),
-            ),
-          // Floating back button
-          Positioned(
-            top: 40,
-            left: 10,
-            child: IconButton(
-              icon: const Icon(Icons.close, color: Colors.white, size: 30),
-              onPressed: () => _showExitDialog(),
-            ),
+          if (isLoading) _buildLoadingOverlay(),
+          _buildCloseButton(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLoadingOverlay() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const CircularProgressIndicator(color: Colors.white),
+          const SizedBox(height: 16),
+          Text(
+            isFirstLoad
+                ? 'Loading game...\nFirst time may take a moment'
+                : 'Loading...',
+            textAlign: TextAlign.center,
+            style: const TextStyle(color: Colors.white),
           ),
         ],
       ),
     );
   }
 
-  void _showExitDialog() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Exit Game'),
-        content: const Text('Are you sure you want to exit?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              Navigator.pop(context);
-            },
-            child: const Text('Exit', style: TextStyle(color: Colors.red)),
-          ),
-        ],
+  Widget _buildCloseButton() {
+    return Positioned(
+      top: 40,
+      left: 10,
+      child: IconButton(
+        icon: const Icon(Icons.close, color: Colors.white, size: 30),
+        onPressed: _showExitDialog,
       ),
     );
+  }
+
+  void _showExitDialog() {
+    HapiDialog.showConfirm(
+      context: context,
+      title: 'Exit Game',
+      message: 'Are you sure you want to exit?',
+      confirmText: 'Exit',
+      cancelText: 'Cancel',
+    ).then((shouldExit) {
+      if (shouldExit == true) {
+        Navigator.pop(context);
+      }
+    });
   }
 }

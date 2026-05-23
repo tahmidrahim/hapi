@@ -4,6 +4,8 @@ import 'package:hapi/models/game_model.dart';
 import 'package:hapi/providers/user_provider.dart';
 import 'package:hapi/screens/game/WebViewScreen.dart';
 import 'package:hapi/services/game_api_service.dart';
+import 'package:hapi/widgets/custom/hapi_loading.dart';
+import 'package:hapi/widgets/custom/hapi_snackbar.dart';
 
 class GameContent extends ConsumerWidget {
   const GameContent({super.key});
@@ -14,9 +16,7 @@ class GameContent extends ConsumerWidget {
     final user = ref.watch(userProvider);
 
     return gamesAsync.when(
-      loading: () => const Center(
-        child: CircularProgressIndicator(color: Color(0xFF1DE9B6)),
-      ),
+      loading: () => const HapiLoading(color: Color(0xFF1DE9B6)),
       error: (err, stack) => Center(child: Text("Error: $err")),
       data: (games) {
         return GridView.builder(
@@ -32,50 +32,58 @@ class GameContent extends ConsumerWidget {
           itemCount: games.length,
           itemBuilder: (context, index) {
             final game = games[index];
-            return GestureDetector(
-              onTap: () => _onGameClick(context, ref, game),
-              child: Column(
-                children: [
-                  Container(
-                    height: 80,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(color: Colors.black12, blurRadius: 8),
-                      ],
-                    ),
-                    child: const Center(
-                      child: Icon(
-                        Icons.videogame_asset,
-                        size: 40,
-                        color: Color(0xFF1DE9B6),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    game.name,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            );
+            return _buildGameCard(context, ref, game, user);
           },
         );
       },
     );
   }
 
-  void _onGameClick(BuildContext context, WidgetRef ref, GameModel game) async {
-    final user = ref.read(userProvider);
+  Widget _buildGameCard(
+    BuildContext context,
+    WidgetRef ref,
+    GameModel game,
+    UserModel user,
+  ) {
+    return GestureDetector(
+      onTap: () => _onGameClick(context, ref, game, user),
+      child: Column(
+        children: [
+          Container(
+            height: 80,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 8)],
+            ),
+            child: const Center(
+              child: Icon(
+                Icons.videogame_asset,
+                size: 40,
+                color: Color(0xFF1DE9B6),
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            game.name,
+            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+            textAlign: TextAlign.center,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ),
+    );
+  }
 
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Loading game...')));
+  Future<void> _onGameClick(
+    BuildContext context,
+    WidgetRef ref,
+    GameModel game,
+    UserModel user,
+  ) async {
+    HapiSnackbar.showInfo(context, 'Loading game...');
 
     try {
       final apiService = ref.read(gameApiServiceProvider);
@@ -87,8 +95,6 @@ class GameContent extends ConsumerWidget {
 
       if (success && context.mounted) {
         final gameUrl = "${game.curl}?userid=2&token=187871878";
-
-        // Open in WebView inside app
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -98,7 +104,10 @@ class GameContent extends ConsumerWidget {
         );
       }
     } catch (e) {
-      print("Error: $e");
+      debugPrint("Error: $e");
+      if (context.mounted) {
+        HapiSnackbar.showError(context, 'Failed to load game');
+      }
     }
   }
 }

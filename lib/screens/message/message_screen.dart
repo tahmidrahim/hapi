@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:hapi/widgets/custom/hapi_avatar.dart';
+import 'package:hapi/widgets/custom/hapi_button.dart';
 
 class MessageScreen extends StatelessWidget {
   const MessageScreen({super.key});
@@ -9,7 +11,7 @@ class MessageScreen extends StatelessWidget {
       backgroundColor: Colors.white,
       body: Stack(
         children: [
-          // Gradient Background Header (Matches mes.jpg)
+          // Gradient Background Header
           Container(
             height: 200,
             decoration: const BoxDecoration(
@@ -24,32 +26,7 @@ class MessageScreen extends StatelessWidget {
           SafeArea(
             child: Column(
               children: [
-                // Custom App Bar
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Spacer(),
-                      const Text(
-                        'Message',
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF333333),
-                        ),
-                      ),
-                      const Spacer(),
-                      const Icon(
-                        Icons.check_circle_outline,
-                        color: Colors.black54,
-                      ),
-                    ],
-                  ),
-                ),
+                _buildAppBar(),
                 Expanded(
                   child: ListView(
                     padding: const EdgeInsets.only(top: 10),
@@ -78,7 +55,28 @@ class MessageScreen extends StatelessWidget {
     );
   }
 
-  // Header Tiles (Notifications, Family)
+  Widget _buildAppBar() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Spacer(),
+          const Text(
+            'Message',
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF333333),
+            ),
+          ),
+          const Spacer(),
+          const Icon(Icons.check_circle_outline, color: Colors.black54),
+        ],
+      ),
+    );
+  }
+
   Widget _buildHeaderTile(IconData icon, Color color, String title) {
     return ListTile(
       leading: CircleAvatar(
@@ -92,7 +90,6 @@ class MessageScreen extends StatelessWidget {
     );
   }
 
-  // Activity Tile with Message and Badge
   Widget _buildActivityTile() {
     return ListTile(
       leading: const CircleAvatar(
@@ -116,23 +113,12 @@ class MessageScreen extends StatelessWidget {
               style: TextStyle(fontSize: 13),
             ),
           ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-            decoration: BoxDecoration(
-              color: const Color(0xFFF06292),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: const Text(
-              '23',
-              style: TextStyle(color: Colors.white, fontSize: 10),
-            ),
-          ),
+          _buildBadge('23', const Color(0xFFF06292)),
         ],
       ),
     );
   }
 
-  // Feedback Tile with Custom Image/Icon
   Widget _buildFeedbackTile() {
     return ListTile(
       leading: CircleAvatar(
@@ -146,7 +132,6 @@ class MessageScreen extends StatelessWidget {
     );
   }
 
-  // Say Hi Tile (Bottom Section)
   Widget _buildSayHiTile() {
     return Column(
       children: [
@@ -173,21 +158,25 @@ class MessageScreen extends StatelessWidget {
                   style: TextStyle(fontSize: 13),
                 ),
               ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(
-                  color: Colors.red,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: const Text(
-                  '4',
-                  style: TextStyle(color: Colors.white, fontSize: 10),
-                ),
-              ),
+              _buildBadge('4', Colors.red),
             ],
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildBadge(String text, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Text(
+        text,
+        style: const TextStyle(color: Colors.white, fontSize: 10),
+      ),
     );
   }
 }
